@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Internet Ping Graph</title>
+
+        <script src="./socket.io/socket.io.js"></script>
+        <script src="./js/chart.min.js"></script>
+        <script src="./js/script.js"></script>
+
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 5px;
+                background: #111;
+            }
+
+            canvas {
+                transform: translate(-50%, -50%);
+                position: absolute;
+                top: 50%;
+                max-height: 91vh;
+                max-width: 94vw;
+                left: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <select onchange="toggle(this)">
+            <option value="all">All</option>
+            <option value="recent" selected>Recent...</option>
+            <option value="peaks">Peaks above...</option>
+            <option value="troughs">Troughs below...</option>
+        </select>
+
+        <input type="number" name="" id="filter" />
+
+        <canvas id="chart"></canvas>
+    </body>
+</html>
