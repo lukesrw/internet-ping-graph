@@ -1,26 +1,72 @@
-let chart;
+let json;
+
+/**
+ * User controls
+ */
+let mode;
+let modePredicate;
+let input = 100;
+
+/**
+ * Chart.js variables
+ */
+let labels = [];
+let data = [];
+
+function updatePredicate() {
+    switch (mode.value) {
+        case "recent":
+            modePredicate = function () {
+                return true;
+            };
+            break;
+
+        case "peaks":
+            modePredicate = function (ping) {
+                return ping.value > (input || 75);
+            };
+            break;
+
+        case "troughs":
+            modePredicate = function (ping) {
+                return ping.value < input;
+            };
+            break;
+
+        case "timeouts":
+            modePredicate = function (ping) {
+                return ping.value == 0;
+            };
+            break;
+    }
+
+    labels = [];
+    data = [];
+
+    json.slice(mode.value === "recent" ? -(input || 100) : 0).forEach(function (
+        ping
+    ) {
+        if (modePredicate(ping)) {
+            labels.push(ping.time);
+            data.push(ping.value);
+        }
+    });
+}
 
 document.addEventListener("DOMContentLoaded", async function () {
     let request = await fetch("/data/log.json");
-    let json = await request.json();
-    let mode = document.getElementsByTagName("select")[0];
+    json = await request.json();
+
     let filter = document.getElementById("filter");
+    filter.addEventListener("change", function () {
+        input = Number(filter.value);
+    });
 
-    // json = json.sort((ping1, ping2) => {
-    //     let [h1, m1, s1] = ping1.time.split(":");
-    //     let [h2, m2, s2] = ping2.time.split(":");
+    mode = document.getElementsByTagName("select")[0];
+    mode.addEventListener("change", updatePredicate);
+    updatePredicate();
 
-    //     ping1 = Number(h1) * 60 * 60 + Number(m1) * 60 + Number(s1);
-    //     ping2 = Number(h2) * 60 * 60 + Number(m2) * 60 + Number(s2);
-
-    //     if (ping1 > ping2) return 1;
-
-    //     if (ping2 > ping1) return -1;
-
-    //     return 0;
-    // });
-
-    chart = new Chart(document.getElementById("chart"), {
+    let chart = new Chart(document.getElementById("chart"), {
         type: "line",
         data: {
             labels: [],
@@ -81,57 +127,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     io().on("ping", (ping) => {
         json.push(ping);
 
-        let labels = [];
-        let data = [];
-        let input = Number(filter.value);
-
-        switch (mode.value) {
-            case "recent":
-                input = input || 100;
-
-                json.slice(-input).forEach((ping) => {
-                    labels.push(ping.time);
-                    data.push(ping.value);
-                });
-                break;
-
-            case "all":
-                json.forEach((ping) => {
-                    labels.push(ping.time);
-                    data.push(ping.value);
-                });
-                break;
-
-            case "peaks":
-                input = input || 75;
-
-                json.forEach((ping) => {
-                    if (ping.value > input) {
-                        labels.push(ping.time);
-                        data.push(ping.value);
-                    }
-                });
-                break;
-
-            case "troughs":
-                input = input || 5;
-
-                json.forEach((ping) => {
-                    if (ping.value < input) {
-                        labels.push(ping.time);
-                        data.push(ping.value);
-                    }
-                });
-                break;
-
-            case "timeouts":
-                json.forEach((ping) => {
-                    if (ping.value == 0) {
-                        labels.push(ping.time);
-                        data.push(ping.value);
-                    }
-                });
-                break;
+        if (modePredicate(ping)) {
+            labels.push(ping.time);
+            data.push(ping.value);
         }
 
         chart.data.labels = labels;

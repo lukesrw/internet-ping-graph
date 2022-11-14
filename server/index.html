@@ -29,15 +29,14 @@
         </style>
     </head>
     <body>
-        <select onchange="toggle(this)">
-            <option value="all">All</option>
+        <select>
             <option value="recent" selected>Recent...</option>
             <option value="peaks">Peaks above...</option>
             <option value="troughs">Troughs below...</option>
             <option value="timeouts">Timeouts</option>
         </select>
 
-        <input type="number" name="" id="filter" />
+        <input type="number" name="" id="filter" value="100" />
 
         <canvas id="chart"></canvas>
     </body>
