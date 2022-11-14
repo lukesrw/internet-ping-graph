@@ -132,6 +132,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             data.push(ping.value);
         }
 
+        let ui = mode.options[mode.selectedIndex];
+        ui.innerText = ui.innerText.split("(")[0] + " (" + labels.length + ")";
+
         chart.data.labels = labels;
         chart.data.datasets[0].data = data;
 
