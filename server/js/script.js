@@ -131,6 +131,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             labels.push(ping.time);
             data.push(ping.value);
         }
+        if (mode.value === "recent") {
+            labels = labels.slice(-(input || 100));
+            data = data.slice(-labels.length);
+        }
 
         let ui = mode.options[mode.selectedIndex];
         ui.innerText = ui.innerText.split("(")[0] + " (" + labels.length + ")";
