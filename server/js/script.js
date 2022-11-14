@@ -49,33 +49,33 @@ document.addEventListener("DOMContentLoaded", async function () {
                             } else {
                                 return "rgb(45,201,55)";
                             }
-                        },
-                    },
-                },
-            ],
+                        }
+                    }
+                }
+            ]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    display: false,
-                },
+                    display: false
+                }
             },
             elements: {
                 point: {
-                    radius: 0,
-                },
+                    radius: 0
+                }
             },
             animation: {
-                duration: 0,
+                duration: 0
             },
             scales: {
                 y: {
                     min: 0,
-                    suggestedMax: 35,
-                },
-            },
-        },
+                    suggestedMax: 35
+                }
+            }
+        }
     });
 
     io().on("ping", (ping) => {
@@ -122,6 +122,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                         data.push(ping.value);
                     }
                 });
+                break;
+
+            case "timeouts":
+                json.forEach((ping) => {
+                    if (ping.value == 0) {
+                        labels.push(ping.time);
+                        data.push(ping.value);
+                    }
+                });
+                break;
         }
 
         chart.data.labels = labels;
