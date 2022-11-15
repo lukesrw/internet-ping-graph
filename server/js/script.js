@@ -56,6 +56,7 @@ function updatePredicate() {
 document.addEventListener("DOMContentLoaded", async function () {
     let request = await fetch("/data/log.json");
     json = await request.json();
+    json = json.slice(-8640);
 
     let filter = document.getElementById("filter");
     filter.addEventListener("change", function () {
@@ -126,6 +127,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     io().on("ping", (ping) => {
         json.push(ping);
+        json = json.slice(-8640);
 
         if (modePredicate(ping)) {
             labels.push(ping.time);
